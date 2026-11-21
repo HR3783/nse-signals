@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NSE Signals</title>
+<style>
+  :root { --bg:#0e1116; --card:#161b22; --line:#262d36; --text:#e6edf3; --mute:#8b949e; --buy:#3fb950; --sell:#f85149; --warn:#d29922; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  .wrap { max-width:900px; margin:0 auto; padding:20px 14px 60px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--mute); font-size:13px; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; margin:16px 0; align-items:center; }
+  button { background:var(--card); color:var(--text); border:1px solid var(--line); padding:6px 12px; border-radius:8px; cursor:pointer; font:inherit; }
+  button.on { border-color:var(--text); }
+  .stale { color:var(--warn); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px;
+          display:grid; grid-template-columns:1fr auto; gap:4px 12px; border-left:4px solid var(--line); }
+  .card.buy { border-left-color:var(--buy); } .card.sell { border-left-color:var(--sell); }
+  .sym { font-weight:600; font-size:17px; }
+  .tag { font-size:12px; padding:2px 8px; border-radius:99px; margin-left:8px; background:#222a33; }
+  .buy .kind { color:var(--buy); } .sell .kind { color:var(--sell); }
+  .kind { font-weight:600; text-align:right; }
+  .meta { color:var(--mute); font-size:13px; }
+  .num { text-align:right; font-variant-numeric:tabular-nums; }
+  .empty { text-align:center; color:var(--mute); padding:40px 0; }
+  footer { color:var(--mute); font-size:12px; margin-top:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>NSE Buy / Exit Signals <span class="sub">· 15m gap &amp; opening-range breakout</span></h1>
+  <div class="sub" id="status">Loading…</div>
+  <div class="bar">
+    <button data-f="all" class="on">All</button>
+    <button data-f="buy">Buy</button>
+    <button data-f="sell">Exit</button>
+    <button id="refresh">Refresh</button>
+  </div>
+  <div id="list"></div>
+  <footer>Rule-based alerts from delayed free data, not advice or predictions. Many breakouts fail: always use the stop.
+    Verify price on your broker before trading.</footer>
+</div>
+<script>
+let data = { signals: [] }, filter = "all";
+const $ = id => document.getElementById(id);
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+const fmt = n => Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function render() {
+  const list = $("list"); list.replaceChildren();
+  const rows = data.signals
+    .filter(s => filter === "all" || (filter === "buy") === s.kind.startsWith("BUY"))
+    .sort((a, b) => b.bar.localeCompare(a.bar));
+  if (!rows.length) { list.append(el("div", "empty", "No signals yet today. Check again after the market opens.")); return; }
+  for (const s of rows) {
+    const isBuy = s.kind.startsWith("BUY");
+    const c = el("div", "card " + (isBuy ? "buy" : "sell"));
+    const left = el("div");
+    const sym = el("span", "sym", s.symbol); left.append(sym);
+    if (s.gap) left.append(el("span", "tag", "gap-up day"));
+    c.append(left, el("div", "kind", s.kind));
+    c.append(el("div", "meta", "Candle " + s.bar.slice(11, 16) + " IST"), el("div", "num", "Price " + fmt(s.price)));
+    if (s.stop) {
+      c.append(el("div", "meta", "Stop " + fmt(s.stop)), el("div", "num meta", "Target " + fmt(s.target)));
+    }
+    list.append(c);
+  }
+}
+
+async function load() {
+  try {
+    const r = await fetch("signals.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+    const upd = new Date(data.updated);
+    const mins = Math.round((Date.now() - upd) / 60000);
+    const st = $("status");
+    st.className = "sub" + (mins > 30 ? " stale" : "");
+    st.textContent = "Last scan " + upd.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST (" + mins + " min ago) · watching " + (data.watchlist || []).length + " stocks";
+  } catch (e) {
+    $("status").textContent = "Could not load signals.json yet. The scanner has not run, or the file is missing.";
+  }
+  render();
+}
+
+document.querySelectorAll("button[data-f]").forEach(b => b.onclick = () => {
+  filter = b.dataset.f;
+  document.querySelectorAll("button[data-f]").forEach(x => x.classList.toggle("on", x === b));
+  render();
+});
+$("refresh").onclick = load;
+load(); setInterval(load, 60000);
+</script>
+</body>
+</html>
