@@ -1,0 +1,31 @@
+{
+ "updated": "2026-11-21T15:09:04+05:30",
+ "watchlist": [
+  "APOLLOHOSP",
+  "MAXHEALTH",
+  "AXISBANK",
+  "ULTRACEMCO",
+  "HDFCBANK",
+  "ICICIBANK",
+  "RELIANCE",
+  "TCS",
+  "INFY",
+  "SBIN",
+  "LT",
+  "BAJFINANCE",
+  "TATAMOTORS",
+  "SUNPHARMA",
+  "ADANIENT"
+ ],
+ "signals": [
+  {
+   "symbol": "LT",
+   "kind": "BUY pullback",
+   "price": 4209.10009765625,
+   "bar": "2026-11-20 15:15:00+05:30",
+   "gap": false,
+   "stop": 4199.0,
+   "target": 4229.30029296875
+  }
+ ]
+}
