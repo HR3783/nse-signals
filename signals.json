@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-24T20:07:05+05:30",
+ "updated": "2026-11-25T19:27:02+05:30",
  "watchlist": [
   "APOLLOHOSP",
   "MAXHEALTH",
@@ -17,5 +17,15 @@
   "SUNPHARMA",
   "ADANIENT"
  ],
- "signals": []
+ "signals": [
+  {
+   "symbol": "APOLLOHOSP",
+   "kind": "BUY pullback",
+   "price": 9300.0,
+   "bar": "2026-11-25 15:15:00+05:30",
+   "gap": true,
+   "stop": 9290.0,
+   "target": 9320.0
+  }
+ ]
 }
