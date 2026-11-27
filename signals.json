@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26T19:06:31+05:30",
+ "updated": "2026-11-27T19:02:03+05:30",
  "watchlist": [
   "APOLLOHOSP",
   "MAXHEALTH",
@@ -17,29 +17,5 @@
   "SUNPHARMA",
   "ADANIENT"
  ],
- "signals": [
-  {
-   "symbol": "ULTRACEMCO",
-   "kind": "BUY pullback",
-   "price": 12737.0,
-   "bar": "2026-11-26 15:15:00+05:30",
-   "gap": false,
-   "stop": 12700.0,
-   "target": 12811.0
-  },
-  {
-   "symbol": "LT",
-   "kind": "EXIT / SELL",
-   "price": 4132.10009765625,
-   "bar": "2026-11-26 15:15:00+05:30",
-   "gap": false
-  },
-  {
-   "symbol": "BAJFINANCE",
-   "kind": "EXIT / SELL",
-   "price": 1097.8499755859375,
-   "bar": "2026-11-26 15:15:00+05:30",
-   "gap": false
-  }
- ]
+ "signals": []
 }
